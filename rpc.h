@@ -11,6 +11,8 @@ typedef struct rpc_server rpc_server;
 /* Client state */
 typedef struct rpc_client rpc_client;
 
+typedef struct rpc_function rpc_function;
+
 /* The payload for requests/responses */
 typedef struct {
     int data1;

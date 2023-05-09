@@ -1,11 +1,15 @@
 CC=cc
 RPC_SYSTEM=rpc.o
+UTIL=util.o
 
 .PHONY: format all
 
-all: $(RPC_SYSTEM)
+all: $(RPC_SYSTEM) $(UTIL)
 
 $(RPC_SYSTEM): rpc.c rpc.h
+	$(CC) -c -o $@ $<
+
+$(UTIL): util.c util.h
 	$(CC) -c -o $@ $<
 
 # RPC_SYSTEM_A=rpc.a

@@ -9,17 +9,18 @@ int main(int argc, char *argv[]) {
     rpc_server *state;
 
     state = rpc_init_server(3000);
-    if (state == NULL) {
-        fprintf(stderr, "Failed to init\n");
-        exit(EXIT_FAILURE);
-    }
+    // if (state == NULL) {
+    //     fprintf(stderr, "Failed to init\n");
+    //     exit(EXIT_FAILURE);
+    // }
 
-    if (rpc_register(state, "add2", add2_i8) == -1) {
-        fprintf(stderr, "Failed to register add2\n");
-        exit(EXIT_FAILURE);
-    }
+    // If I type add2, add the function add2 to rpc_server f
+    // if (rpc_register(state, "add2", add2_i8) == -1) {
+    //     fprintf(stderr, "Failed to register add2\n");
+    //     exit(EXIT_FAILURE);
+    // }
 
-    rpc_serve_all(state);
+    // rpc_serve_all(state);
 
     return 0;
 }
