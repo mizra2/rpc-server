@@ -9,16 +9,16 @@ CLIENT=rpc-client
 all: $(LIBRARY) $(SERVER) $(CLIENT)
 
 $(RPC_SYSTEM): rpc.c rpc.h
-	$(CC) -Wall -c -o $@ $<
+	$(CC) -Wall -pthread -c -o $@ $<
 
 $(LIBRARY): $(RPC_SYSTEM)
 	ar rcs $@ $^
 
 $(SERVER): server.c $(LIBRARY)
-	$(CC) -Wall -o $@ $^
+	$(CC) -Wall -pthread -o $@ $^
 
 $(CLIENT): client.c $(LIBRARY)
-	$(CC) -Wall -o $@ $^
+	$(CC) -Wall -pthread -o $@ $^
 
 format:
 	clang-format -style=file -i *.c *.h
