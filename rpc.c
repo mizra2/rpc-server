@@ -547,7 +547,7 @@ void rpc_close_client(rpc_client *cl) {
         // Connection is still open 
         // Send a request to close connection;
 
-        n = write(cl->sockfd, "close", 5);
+        n = write(cl->sockfd, "end!", 5);
 
         if (n < 0) {
 
@@ -625,7 +625,7 @@ void *test_multithreading(void * s) {
 
         //has to be 4 chars
 
-        if (!strcmp(type, "close")) {
+        if (!strcmp(type, "end!")) {
 
             uint32_t close_signal = 1;
 
@@ -668,6 +668,8 @@ void *test_multithreading(void * s) {
 
                 n = write(srv->a_sockfd, & value, sizeof(uint32_t));
             }
+            free(functionName);
+
         }
 
         if (!strcmp(type, "call")) {
@@ -748,10 +750,11 @@ void *test_multithreading(void * s) {
                     n = write(srv->a_sockfd, data2, data -> data2_len);
                 }
             }
+            free(data->data2);
+            free(data);
 
         }
         free(type);
-
     }
     return NULL;
 }
