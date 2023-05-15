@@ -69,18 +69,21 @@ rpc_server *rpc_init_server(int port) {
         printf("Error getting address info\n");
         exit(EXIT_FAILURE);
     }
-    newServer->sockfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
+    struct addrinfo *p;
 
-    if(newServer->sockfd < 0) {
-        printf("Error creating socket\n");
-        exit(EXIT_FAILURE);
+    for(p = res; p != NULL; p = p -> ai_next) {
+        if(p->ai_family == AF_INET6 && (newServer->sockfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol)) < 0) {
+            printf("Error creating socket\n");
+            exit(EXIT_FAILURE);
+        }
     }
+
 
     // Per Spec Sheet Request
     int enable = 1;
     if (setsockopt(newServer->sockfd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0) {
-    perror("setsockopt");
-    exit(EXIT_FAILURE);
+        perror("setsockopt");
+        exit(EXIT_FAILURE);
     }
 
     if(bind(newServer->sockfd, res->ai_addr, res->ai_addrlen) < 0) {
@@ -90,26 +93,15 @@ rpc_server *rpc_init_server(int port) {
     
     freeaddrinfo(res);
 
-    if(listen(newServer->sockfd, 5) < 0) {
-        printf("Error listening");
-        exit(EXIT_FAILURE);
-    }
-
     // newServer->a_sockfd = accept(newServer->sockfd, (struct sockaddr*)&client_addr, &client_addr_size);
 
     // Need sockfd, clientaddr, client_addr_size
 
-    inet_ntop(client_addr.sin_family, &client_addr.sin_addr, ip,
-			  INET_ADDRSTRLEN);
+    // inet_ntop(client_addr.sin_family, &client_addr.sin_addr, ip,
+	// 		  INET_ADDRSTRLEN);
 
-    port = ntohs(client_addr.sin_port);
+    // port = ntohs(client_addr.sin_port);
 
-
-    // Testing Connection
-
-    // printf("======================================\n\n");
-    // printf("New Connection From %s : %d on socket %d\n\n", ip, port, newServer->a_sockfd);
-    // printf("======================================\n");
 
     return newServer;
 }
@@ -155,6 +147,11 @@ void rpc_serve_all(rpc_server * srv) {
     struct sockaddr_in client_addr;
     socklen_t client_addr_size;
     client_addr_size = sizeof client_addr;
+
+    if(listen(srv->sockfd, 5) < 0) {
+        printf("Error listening");
+        exit(EXIT_FAILURE);
+    }
 
     while (RUNNING) {
 
@@ -418,7 +415,17 @@ rpc_handle *rpc_find(rpc_client *cl, char *name) {
 
     n = write(cl->sockfd, name, strlen(name));
 
+    if(n < 0) {
+        perror("write");
+		exit(EXIT_FAILURE);
+    }
+
     n = read(cl->sockfd, &handler->n, sizeof(uint32_t));
+
+    if(n < 0) {
+        perror("read");
+		exit(EXIT_FAILURE);
+    }
 
     handler->n = ntohl(handler->n);
 
