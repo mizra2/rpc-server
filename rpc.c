@@ -49,7 +49,7 @@ rpc_server *rpc_init_server(int port) {
     newServer->functions = createArray();
 
     struct addrinfo hints, *res;
-    
+
     char service[6];
 
     snprintf(service, 6, "%d", port);
@@ -640,10 +640,13 @@ void *test_multithreading(void * s) {
                 exit(EXIT_FAILURE);
             }
             buffer[n] = '\0';
-
+            printf("%s\n", buffer);
             // printf("%s\n", functionName);
             int found = -1;
             for (int i = 0; i < srv -> functions -> n; i++) {
+                
+                printf("Functions: %d %s\n", i, srv -> functions -> F[i] -> function_name);
+
                 if (!strcmp(buffer, srv -> functions -> F[i] -> function_name)) {
 
                     uint32_t value = htonl(i);
