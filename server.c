@@ -6,23 +6,24 @@
 rpc_data *add2_i8(rpc_data *);
 
 int main(int argc, char *argv[]) {
+
     rpc_server *state;
 
     state = rpc_init_server(3000);
-    // if (state == NULL) {
-    //     fprintf(stderr, "Failed to init\n");
-    //     exit(EXIT_FAILURE);
-    // }
+    if (state == NULL) {
+        fprintf(stderr, "Failed to init\n");
+        exit(EXIT_FAILURE);
+    }
 
-    // If I type add2, add the function add2 to rpc_server f
-    // if (rpc_register(state, "add2", add2_i8) == -1) {
-    //     fprintf(stderr, "Failed to register add2\n");
-    //     exit(EXIT_FAILURE);
-    // }
+    if (rpc_register(state, "add2", add2_i8) == -1) {
+        fprintf(stderr, "Failed to register add2\n");
+        exit(EXIT_FAILURE);
+    }
 
-    // rpc_serve_all(state);
+    rpc_serve_all(state);
 
     return 0;
+
 }
 
 /* Adds 2 signed 8 bit numbers */
@@ -36,7 +37,7 @@ rpc_data *add2_i8(rpc_data *in) {
     /* Parse request */
     char n1 = in->data1;
     char n2 = ((char *)in->data2)[0];
-
+    
     /* Perform calculation */
     printf("add2: arguments %d and %d\n", n1, n2);
     int res = n1 + n2;

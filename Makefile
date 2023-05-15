@@ -1,6 +1,8 @@
 CC=cc
 RPC_SYSTEM=rpc.o
 UTIL=util.o
+SERVER=rpc-server
+CLIENT=rpc-client
 
 .PHONY: format all
 
@@ -12,9 +14,9 @@ $(RPC_SYSTEM): rpc.c rpc.h
 $(UTIL): util.c util.h
 	$(CC) -c -o $@ $<
 
-# RPC_SYSTEM_A=rpc.a
-# $(RPC_SYSTEM_A): rpc.o
-# 	ar rcs $(RPC_SYSTEM_A) $(RPC_SYSTEM)
-
 format:
 	clang-format -style=file -i *.c *.h
+
+clean:
+	rm -f rpc.o util.o
+

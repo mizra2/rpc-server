@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+
 /* Server state */
 typedef struct rpc_server rpc_server;
 /* Client state */
@@ -13,10 +14,13 @@ typedef struct rpc_client rpc_client;
 
 typedef struct rpc_function rpc_function;
 
+typedef struct thread_content thread_content;
+
+
 /* The payload for requests/responses */
 typedef struct {
-    int data1;
-    size_t data2_len;
+    int data1; // Max Size Of Size (64 Bits)
+    size_t data2_len; // What it means to of size_t
     void *data2;
 } rpc_data;
 
@@ -68,5 +72,12 @@ void rpc_close_client(rpc_client *cl);
 
 /* Frees a rpc_data struct */
 void rpc_data_free(rpc_data *data);
+
+void test_function_execution(rpc_server *test);
+
+void test_call_function(rpc_client *cl, rpc_handle *h);
+
+void *test_multithreading(void * s);
+
 
 #endif

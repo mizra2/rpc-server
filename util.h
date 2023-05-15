@@ -20,7 +20,7 @@ array_t *createArray();
 
 void ensureArraySize(array_t *arr);
 
-// void appendArray(array_t *arr, footpath_t *n);
+void appendArray(array_t *arr, rpc_function *n);
 
 void arrayFree(array_t *arr);
 

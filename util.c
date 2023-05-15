@@ -1,8 +1,8 @@
 // Linked List strucutre used from COMP20003 Project 1 (ADS 2022 Sem 2) by Milad Izra
 
+
 #include <stdio.h>
 #include "util.h"
-
 
 
 array_t *createArray() {
@@ -26,11 +26,11 @@ void ensureArraySize(array_t *arr) {
 }
 
 
-// void appendArray(array_t *arr, /*TODO ADD FUNCTION TO ARRAY OF FUNCTIONS*/ ) {
-//     ensureArraySize(arr);
-//     arr->F[arr->n] = n;
-//     (arr->n)++;
-// }
+void appendArray(array_t *arr, rpc_function *n) {
+    ensureArraySize(arr);
+    arr->F[arr->n] = n;
+    (arr->n)++;
+}
 
 void arrayFree(array_t *arr) {
 	for (int i = 0; i < arr->n; i++) {
