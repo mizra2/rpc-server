@@ -1,11 +1,11 @@
 #include <stdlib.h>
 #include "rpc.h"
-#include "util.h"
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <unistd.h>
 #include <string.h>
 #include <stdio.h>
+#include <assert.h>
 #include <pthread.h>
 
 
