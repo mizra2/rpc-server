@@ -621,11 +621,9 @@ void *test_multithreading(void * s) {
 
         buffer[n] = '\0';
 
-        char * type = strdup(buffer);
-
         //has to be 4 chars
 
-        if (!strcmp(type, "end!")) {
+        if (!strcmp(buffer, "end!")) {
 
             uint32_t close_signal = 1;
 
@@ -634,11 +632,10 @@ void *test_multithreading(void * s) {
             n = write(srv->a_sockfd, & close_signal, sizeof(uint32_t));
 
             close(srv->a_sockfd);
-            free(type);
             break;
         }
 
-        if (!strcmp(type, "find")) {
+        if (!strcmp(buffer, "find")) {
 
             n = read(srv->a_sockfd, buffer, 255);
 
@@ -648,11 +645,10 @@ void *test_multithreading(void * s) {
             }
             buffer[n] = '\0';
 
-            char * functionName = strdup(buffer);
             // printf("%s\n", functionName);
             int found = -1;
             for (int i = 0; i < srv -> functions -> n; i++) {
-                if (!strcmp(functionName, srv -> functions -> F[i] -> function_name)) {
+                if (!strcmp(buffer, srv -> functions -> F[i] -> function_name)) {
 
                     uint32_t value = htonl(i);
 
@@ -668,11 +664,9 @@ void *test_multithreading(void * s) {
 
                 n = write(srv->a_sockfd, & value, sizeof(uint32_t));
             }
-            free(functionName);
-
         }
 
-        if (!strcmp(type, "call")) {
+        if (!strcmp(buffer, "call")) {
 
             // Accept Data Regarding Index of Function
             uint32_t value;
@@ -716,9 +710,9 @@ void *test_multithreading(void * s) {
 
             // Function Call 
 
-            data = srv -> functions -> F[value] -> function_handler(data);
+            rpc_data *newData = srv -> functions -> F[value] -> function_handler(data);
 
-            if (!data) {
+            if (!newData) {
                 // SEND FAILED CALL SIGNAL 
                 uint32_t status = 0;
                 status = htonl(status);
@@ -732,29 +726,28 @@ void *test_multithreading(void * s) {
 
                 // Data 1 (Server -> Client)
 
-                int64_t value_d = htobe64((int64_t) data -> data1);
+                int64_t value_d = htobe64((int64_t) newData -> data1);
                 n = write(srv->a_sockfd, & value_d, sizeof(int64_t));
 
                 // Data 2 Len (Server -> Client)
 
-                uint32_t convertedValue = (uint32_t) data -> data2_len;
+                uint32_t convertedValue = (uint32_t) newData -> data2_len;
 
                 convertedValue = htonl(convertedValue);
 
                 n = write(srv->a_sockfd, & convertedValue, sizeof(uint32_t));
 
                 // Data 2 Field (Server -> Client)
-                if (data -> data2_len != 0) {
-                    void * data2 = data -> data2;
+                if (newData -> data2_len != 0) {
+                    void * data2 = newData -> data2;
 
-                    n = write(srv->a_sockfd, data2, data -> data2_len);
+                    n = write(srv->a_sockfd, data2, newData -> data2_len);
                 }
             }
-            free(data->data2);
-            free(data);
+            rpc_data_free(data);
+            rpc_data_free(newData);
 
         }
-        free(type);
     }
     return NULL;
 }

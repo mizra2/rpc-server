@@ -4,3 +4,5 @@ rpc-server
 util.c
 util.h
 librpc.a
+valgrind_client_out.txt
+valgrind_server_out.txt
