@@ -19,11 +19,11 @@ $(LIBRARY): $(RPC_SYSTEM) $(UTIL)
 	ar rcs $@ $^
 
 $(SERVER): server.c $(LIBRARY)
-	$(CC) -Wall -o $@ $^
+	$(CC) -Wall -L. -o $@ $^ -lrpc
 
 $(CLIENT): client.c $(LIBRARY)
-	$(CC) -Wall -o $@ $^
-
+	$(CC) -Wall -L. -o $@ $^ -lrpc
+	
 format:
 	clang-format -style=file -i *.c *.h
 
