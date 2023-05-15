@@ -3,24 +3,19 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <netdb.h>
 
 int main(int argc, char *argv[]) {
 
     int exit_code = 0;
 
-    char *ip;
+    char ip_add[INET_ADDRSTRLEN];
+    strcpy(ip_add, argv[4]);
+    int port = atoi(argv[2]);
 
-    int port;
+    //rpc_client *state = rpc_init_client("::1", 6000);
+    rpc_client *state = rpc_init_client(ip_add, port);
 
-    for(int i = 1; i < argc; i++) {
-        if(!strcmp(argv[i], "-i")) {
-            ip = argv[i + 1];
-        } else if(!strcmp(argv[i], "-p")) {
-            port = atoi(argv[++i]);
-        } 
-    }
-
-    rpc_client *state = rpc_init_client(ip, port);
     if (state == NULL) {
         exit(EXIT_FAILURE);
     }
