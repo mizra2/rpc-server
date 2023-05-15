@@ -9,7 +9,7 @@ CLIENT=rpc-client
 all: $(LIBRARY) $(SERVER) $(CLIENT)
 
 $(RPC_SYSTEM): rpc.c rpc.h
-	$(CC) -c -o $@ $<
+	$(CC) -Wall -c -o $@ $<
 
 $(LIBRARY): $(RPC_SYSTEM)
 	ar rcs $@ $^

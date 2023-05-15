@@ -86,7 +86,7 @@ void test_function_execution(rpc_server *test);
 
 void test_call_function(rpc_client *cl, rpc_handle *h);
 
-void *test_multithreading(void * s);
+// void *test_multithreading(void * s);
 
 array_t *createArray();
 

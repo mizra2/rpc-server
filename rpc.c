@@ -47,14 +47,11 @@ rpc_server *rpc_init_server(int port) {
     rpc_server *newServer = malloc(sizeof(*newServer));
     newServer->functions = createArray();
 
-    int n;
-
-    socklen_t client_addr_size;
     struct addrinfo hints, *res;
 
     struct sockaddr_in client_addr;
 
-    char buffer[256], ip[INET_ADDRSTRLEN];
+    char ip[INET_ADDRSTRLEN];
 
     char service[6];
 
@@ -401,8 +398,6 @@ rpc_client *rpc_init_client(char *addr, int port) {
 
 rpc_handle *rpc_find(rpc_client *cl, char *name) {
 
-    char buffer[256];
-
     int n;
 
     rpc_handle *handler = malloc(sizeof(*handler));
@@ -412,6 +407,13 @@ rpc_handle *rpc_find(rpc_client *cl, char *name) {
     handler->n = -1;
     
     n = write(cl->sockfd, "find", 5);
+
+    if (n < 0) {
+
+		perror("write");
+		exit(EXIT_FAILURE);
+
+	}
 
     n = write(cl->sockfd, name, strlen(name));
 
@@ -433,6 +435,13 @@ rpc_data *rpc_call(rpc_client *cl, rpc_handle *h, rpc_data *payload) {
     rpc_data *newData = malloc(sizeof(*newData));
 
     n = write(cl->sockfd, "call", 5);
+
+    if (n < 0) {
+
+		perror("write");
+		exit(EXIT_FAILURE);
+        
+	}
 
     h->n = htonl(h->n);
 
@@ -528,6 +537,13 @@ void rpc_close_client(rpc_client *cl) {
 
         n = write(cl->sockfd, "close", 5);
 
+        if (n < 0) {
+            
+            perror("read");
+            exit(EXIT_FAILURE);
+        
+	    }
+
         // Read signal closed. 
 
         uint32_t signal_closed;
@@ -559,173 +575,173 @@ void rpc_data_free(rpc_data *data) {
 //        (\ /)
 //       ( . .) ♥ ~< Testing Functions  For "add2" & Mutlithreading =) >
 //       c(")(")
-void test_function_execution(rpc_server *test) {
-    rpc_data input;
-    input.data1 = 2;
-    int data2_val = 5;
-    input.data2 = &data2_val;
-    input.data2_len = 1;   
-}
+// void test_function_execution(rpc_server *test) {
+//     rpc_data input;
+//     input.data1 = 2;
+//     int data2_val = 5;
+//     input.data2 = &data2_val;
+//     input.data2_len = 1;   
+// }
 
-void test_call_function(rpc_client *cl, rpc_handle *h) {
-    int test = 10;
-    rpc_data request_data = { .data1 = 2, .data2_len = 0, .data2 = NULL};
-    rpc_call(cl, h, &request_data);  
-}
+// void test_call_function(rpc_client *cl, rpc_handle *h) {
+//     int test = 10;
+//     rpc_data request_data = { .data1 = 2, .data2_len = 0, .data2 = NULL};
+//     rpc_call(cl, h, &request_data);  
+// }
 
-void *test_multithreading(void * s) {
+// void *test_multithreading(void * s) {
 
-    rpc_server *srv = (rpc_server*)s;
-    char buffer[256];
+//     rpc_server *srv = (rpc_server*)s;
+//     char buffer[256];
 
-    int n;
+//     int n;
 
-    while (CONNECTION_ESTABLISHED) {
+//     while (CONNECTION_ESTABLISHED) {
 
-        // If you send two strings one of size x and one of size y, and then read a string of size z, where z > x+y itll read both at once
+//         // If you send two strings one of size x and one of size y, and then read a string of size z, where z > x+y itll read both at once
 
-        // leave space for null term
-        n = read(srv->a_sockfd, buffer, 5);
-        if (n < 0) {
-            printf("Error reading");
-            exit(EXIT_FAILURE);
-        }
+//         // leave space for null term
+//         n = read(srv->a_sockfd, buffer, 5);
+//         if (n < 0) {
+//             printf("Error reading");
+//             exit(EXIT_FAILURE);
+//         }
 
-        buffer[n] = '\0';
+//         buffer[n] = '\0';
 
-        char * type = strdup(buffer);
+//         char * type = strdup(buffer);
 
-        //has to be 4 chars
+//         //has to be 4 chars
 
-        if (!strcmp(type, "close")) {
+//         if (!strcmp(type, "close")) {
 
-            uint32_t close_signal = 1;
+//             uint32_t close_signal = 1;
 
-            close_signal = ntohl(close_signal);
+//             close_signal = ntohl(close_signal);
 
-            n = write(srv->a_sockfd, & close_signal, sizeof(uint32_t));
+//             n = write(srv->a_sockfd, & close_signal, sizeof(uint32_t));
 
-            close(srv->a_sockfd);
-            free(type);
-            break;
-        }
+//             close(srv->a_sockfd);
+//             free(type);
+//             break;
+//         }
 
-        if (!strcmp(type, "find")) {
+//         if (!strcmp(type, "find")) {
 
-            n = read(srv->a_sockfd, buffer, 255);
+//             n = read(srv->a_sockfd, buffer, 255);
 
-            if (n < 0) {
-                printf("Error reading");
-                exit(EXIT_FAILURE);
-            }
-            buffer[n] = '\0';
+//             if (n < 0) {
+//                 printf("Error reading");
+//                 exit(EXIT_FAILURE);
+//             }
+//             buffer[n] = '\0';
 
-            char * functionName = strdup(buffer);
-            // printf("%s\n", functionName);
-            int found = -1;
-            for (int i = 0; i < srv -> functions -> n; i++) {
-                if (!strcmp(functionName, srv -> functions -> F[i] -> function_name)) {
+//             char * functionName = strdup(buffer);
+//             // printf("%s\n", functionName);
+//             int found = -1;
+//             for (int i = 0; i < srv -> functions -> n; i++) {
+//                 if (!strcmp(functionName, srv -> functions -> F[i] -> function_name)) {
 
-                    uint32_t value = htonl(i);
+//                     uint32_t value = htonl(i);
 
-                    n = write(srv->a_sockfd, & value, sizeof(uint32_t));
+//                     n = write(srv->a_sockfd, & value, sizeof(uint32_t));
 
-                    found = 1;
-                    break;
+//                     found = 1;
+//                     break;
 
-                }
-            }
-            if (found == -1) {
-                uint32_t value = htonl(-1);
+//                 }
+//             }
+//             if (found == -1) {
+//                 uint32_t value = htonl(-1);
 
-                n = write(srv->a_sockfd, & value, sizeof(uint32_t));
-            }
-        }
+//                 n = write(srv->a_sockfd, & value, sizeof(uint32_t));
+//             }
+//         }
 
-        if (!strcmp(type, "call")) {
+//         if (!strcmp(type, "call")) {
 
-            // Accept Data Regarding Index of Function
-            uint32_t value;
+//             // Accept Data Regarding Index of Function
+//             uint32_t value;
 
-            n = read(srv->a_sockfd, & value, sizeof(uint32_t));
+//             n = read(srv->a_sockfd, & value, sizeof(uint32_t));
 
-            value = ntohl(value);
+//             value = ntohl(value);
 
-            // Receive Data From Client (Client -> Server)
-            // ======================== // 
+//             // Receive Data From Client (Client -> Server)
+//             // ======================== // 
 
-            rpc_data * data = malloc(sizeof( * data));
-            assert(data);
-            // Data 1 (Client -> Server)
-            int64_t test;
-            n = read(srv->a_sockfd, & test, sizeof(int64_t));
-            data -> data1 = (int) be64toh(test);
+//             rpc_data * data = malloc(sizeof( * data));
+//             assert(data);
+//             // Data 1 (Client -> Server)
+//             int64_t test;
+//             n = read(srv->a_sockfd, & test, sizeof(int64_t));
+//             data -> data1 = (int) be64toh(test);
 
-            // Data 2 Len (Client -> Server)
+//             // Data 2 Len (Client -> Server)
 
-            uint32_t data2_len;
+//             uint32_t data2_len;
 
-            n = read(srv->a_sockfd, & data2_len, sizeof(uint32_t));
+//             n = read(srv->a_sockfd, & data2_len, sizeof(uint32_t));
 
-            data -> data2_len = (size_t) ntohl(data2_len);
+//             data -> data2_len = (size_t) ntohl(data2_len);
 
-            // Data 2 Field (Client -> Server)
+//             // Data 2 Field (Client -> Server)
 
-            if (data -> data2_len != 0) {
-                void * data2 = malloc(data -> data2_len);
-                assert(data2);
+//             if (data -> data2_len != 0) {
+//                 void * data2 = malloc(data -> data2_len);
+//                 assert(data2);
 
-                n = read(srv->a_sockfd, data2, data -> data2_len);
-                data -> data2 = data2;
-            } else {
-                data -> data2 = NULL;
-            }
+//                 n = read(srv->a_sockfd, data2, data -> data2_len);
+//                 data -> data2 = data2;
+//             } else {
+//                 data -> data2 = NULL;
+//             }
 
-            // End Reciving Data From Client
-            // ======================== // 
+//             // End Reciving Data From Client
+//             // ======================== // 
 
-            // Function Call 
+//             // Function Call 
 
-            data = srv -> functions -> F[value] -> function_handler(data);
+//             data = srv -> functions -> F[value] -> function_handler(data);
 
-            if (!data) {
-                // SEND FAILED CALL SIGNAL 
-                uint32_t status = 0;
-                status = htonl(status);
-                n = write(srv->a_sockfd, & status, sizeof(uint32_t));
-            } else {
-                uint32_t status = 1;
-                status = htonl(status);
-                n = write(srv->a_sockfd, & status, sizeof(uint32_t));
-                // Send New Data Back To Client If Successful
-                // ======================== // 
+//             if (!data) {
+//                 // SEND FAILED CALL SIGNAL 
+//                 uint32_t status = 0;
+//                 status = htonl(status);
+//                 n = write(srv->a_sockfd, & status, sizeof(uint32_t));
+//             } else {
+//                 uint32_t status = 1;
+//                 status = htonl(status);
+//                 n = write(srv->a_sockfd, & status, sizeof(uint32_t));
+//                 // Send New Data Back To Client If Successful
+//                 // ======================== // 
 
-                // Data 1 (Server -> Client)
+//                 // Data 1 (Server -> Client)
 
-                int64_t value_d = htobe64((int64_t) data -> data1);
-                n = write(srv->a_sockfd, & value_d, sizeof(int64_t));
+//                 int64_t value_d = htobe64((int64_t) data -> data1);
+//                 n = write(srv->a_sockfd, & value_d, sizeof(int64_t));
 
-                // Data 2 Len (Server -> Client)
+//                 // Data 2 Len (Server -> Client)
 
-                uint32_t convertedValue = (uint32_t) data -> data2_len;
+//                 uint32_t convertedValue = (uint32_t) data -> data2_len;
 
-                convertedValue = htonl(convertedValue);
+//                 convertedValue = htonl(convertedValue);
 
-                n = write(srv->a_sockfd, & convertedValue, sizeof(uint32_t));
+//                 n = write(srv->a_sockfd, & convertedValue, sizeof(uint32_t));
 
-                // Data 2 Field (Server -> Client)
-                if (data -> data2_len != 0) {
-                    void * data2 = data -> data2;
+//                 // Data 2 Field (Server -> Client)
+//                 if (data -> data2_len != 0) {
+//                     void * data2 = data -> data2;
 
-                    n = write(srv->a_sockfd, data2, data -> data2_len);
-                }
-            }
+//                     n = write(srv->a_sockfd, data2, data -> data2_len);
+//                 }
+//             }
 
-        }
-        free(type);
+//         }
+//         free(type);
 
-    }
-}
+//     }
+// }
 
 array_t *createArray() {
     array_t *arr = malloc(sizeof(*arr));
