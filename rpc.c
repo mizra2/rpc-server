@@ -16,6 +16,7 @@
 
 #define MAX_NAME_LENGTH 1000
 
+
 //     ╱|、
 //   (˚ˎ 。7  
 //    |、˜〵   ♥ ~ < Data Strucutres >      
@@ -30,6 +31,7 @@ struct rpc_server {
     int sockfd;
     int a_sockfd;
     array_t *functions;
+    pthread_mutex_t socket_mutex;
 };
 
 struct rpc_handle {
@@ -417,6 +419,8 @@ void rpc_data_free(rpc_data *data) {
 //        (\ /)
 //       ( . .) ♥ ~< Testing Functions  For "add2" & Mutlithreading =) >
 //       c(")(")
+
+
 // void test_function_execution(rpc_server *test) {
 //     rpc_data input;
 //     input.data1 = 2;
@@ -432,9 +436,16 @@ void rpc_data_free(rpc_data *data) {
 
 void *test_multithreading(void * s) {
 
+
     rpc_server *srv = (rpc_server*)s;
 
+    pthread_mutex_lock(&srv->socket_mutex);
+
     int a_sockfd = srv->a_sockfd;
+
+    pthread_mutex_unlock(&srv->socket_mutex);
+
+
 
     char buffer[256];
 
