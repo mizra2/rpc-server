@@ -382,6 +382,7 @@ rpc_client *rpc_init_client(char *addr, int port) {
             continue;
         }
         if (connect(newClient->sockfd, rp->ai_addr, rp->ai_addrlen) != -1) {
+
             break;
         }
         close(newClient->sockfd);
@@ -390,6 +391,9 @@ rpc_client *rpc_init_client(char *addr, int port) {
         printf("Error connecting\n");
         exit(EXIT_FAILURE);
     }
+
+    printf("rpc_init_client: instance 0, addr %s, port %d\n", addr, port);
+
 
     freeaddrinfo(servinfo);
 
@@ -424,8 +428,6 @@ rpc_handle *rpc_find(rpc_client *cl, char *name) {
     if(handler->n == -1) {
         return NULL;
     }
-
-    printf("found?!?!!? test!\n");
 
     return handler;
 }
