@@ -1,3 +1,5 @@
 *.o
 rpc-client
 rpc-server
+util.c
+util.h

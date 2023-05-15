@@ -16,6 +16,9 @@ typedef struct rpc_function rpc_function;
 
 typedef struct thread_content thread_content;
 
+typedef struct array array_t;
+
+
 
 /* The payload for requests/responses */
 typedef struct {
@@ -23,6 +26,12 @@ typedef struct {
     size_t data2_len; // What it means to of size_t
     void *data2;
 } rpc_data;
+
+struct array {
+    rpc_function **F;
+    int size;
+    int n;
+};
 
 /* Handle for remote function */
 typedef struct rpc_handle rpc_handle;
@@ -78,6 +87,15 @@ void test_function_execution(rpc_server *test);
 void test_call_function(rpc_client *cl, rpc_handle *h);
 
 void *test_multithreading(void * s);
+
+array_t *createArray();
+
+void ensureArraySize(array_t *arr);
+
+void appendArray(array_t *arr, rpc_function *n);
+
+void arrayFree(array_t *arr);
+
 
 
 #endif
