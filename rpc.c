@@ -14,13 +14,15 @@
 
 #define CONNECTION_ESTABLISHED 1
 
+#define MAX_NAME_LENGTH 1000
+
 //     ╱|、
 //   (˚ˎ 。7  
 //    |、˜〵   ♥ ~ < Data Strucutres >      
 //   じしˍ,)ノ
 
 struct rpc_function {
-    char *function_name;
+    char function_name[MAX_NAME_LENGTH + 1];
     rpc_handler function_handler;
 };
 
@@ -116,7 +118,8 @@ int rpc_register(rpc_server *srv, char *name, rpc_handler handler) {
 
     rpc_function *newFunction = malloc(sizeof(*newFunction));
     newFunction->function_handler = handler;
-    newFunction->function_name = name;
+
+    strcpy(newFunction->function_name, name);
 
     // Add function to the server
 
@@ -133,7 +136,7 @@ int rpc_register(rpc_server *srv, char *name, rpc_handler handler) {
     appendArray(srv->functions, newFunction);
 
     // Print registered funciton to ensure that it is being added correctly (Testing)
-    printf("%d: Registered Function: %s\n", srv->functions->n, name);
+    // printf("%d: Registered Function: %s\n", srv->functions->n, name);
 
     // Success if return 1 (Per Spec Sheet)
     return 1;
@@ -640,12 +643,12 @@ void *test_multithreading(void * s) {
                 exit(EXIT_FAILURE);
             }
             buffer[n] = '\0';
-            printf("%s\n", buffer);
+            // printf("%s\n", buffer);
             // printf("%s\n", functionName);
             int found = -1;
             for (int i = 0; i < srv -> functions -> n; i++) {
-                
-                printf("Functions: %d %s\n", i, srv -> functions -> F[i] -> function_name);
+
+                // printf("Functions: %d %s\n", i, srv -> functions -> F[i] -> function_name);
 
                 if (!strcmp(buffer, srv -> functions -> F[i] -> function_name)) {
 
@@ -658,6 +661,7 @@ void *test_multithreading(void * s) {
 
                 }
             }
+
             if (found == -1) {
                 uint32_t value = htonl(-1);
 
