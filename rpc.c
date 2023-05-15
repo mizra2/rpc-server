@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <pthread.h>
-
+#define NONBLOCKING
 
 #define RUNNING 1
 
