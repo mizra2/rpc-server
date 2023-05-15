@@ -595,7 +595,6 @@ void *test_multithreading(void * s) {
 
         char * type = strdup(buffer);
 
-        printf("%s\n", type);
         //has to be 4 chars
 
         if (!strcmp(type, "close")) {

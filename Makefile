@@ -3,10 +3,11 @@ RPC_SYSTEM=rpc.o
 UTIL=util.o
 SERVER=rpc-server
 CLIENT=rpc-client
+LIBRARY=librpc.a
 
 .PHONY: format all
 
-all: $(RPC_SYSTEM) $(UTIL) $(SERVER) $(CLIENT)
+all: $(LIBRARY) $(SERVER) $(CLIENT)
 
 $(RPC_SYSTEM): rpc.c rpc.h
 	$(CC) -c -o $@ $<
@@ -14,10 +15,13 @@ $(RPC_SYSTEM): rpc.c rpc.h
 $(UTIL): util.c util.h
 	$(CC) -c -o $@ $<
 
-$(SERVER): server.c $(RPC_SYSTEM) $(UTIL)
+$(LIBRARY): $(RPC_SYSTEM) $(UTIL)
+	ar rcs $@ $^
+
+$(SERVER): server.c $(LIBRARY)
 	$(CC) -Wall -o $@ $^
 
-$(CLIENT): client.c $(RPC_SYSTEM) $(UTIL)
+$(CLIENT): client.c $(LIBRARY)
 	$(CC) -Wall -o $@ $^
 
 format:
