@@ -34,30 +34,30 @@ int main(int argc, char *argv[]) {
         goto cleanup;
     }
 
-    test_call_function(state, handle_add2);
+    // test_call_function(state, handle_add2);
 
-    // for (int i = 0; i < 2; i++) {
-    //     /* Prepare request */
-    //     char left_operand = i;
-    //     char right_operand = 100;
-    //     rpc_data request_data = {
-    //         .data1 = left_operand, .data2_len = 1, .data2 = &right_operand};
+    for (int i = 0; i < 2; i++) {
+        /* Prepare request */
+        char left_operand = i;
+        char right_operand = 100;
+        rpc_data request_data = {
+            .data1 = left_operand, .data2_len = 1, .data2 = &right_operand};
 
-    //     /* Call and receive response */
-    //     rpc_data *response_data = rpc_call(state, handle_add2, &request_data);
-    //     if (response_data == NULL) {
-    //         fprintf(stderr, "Function call of add2 failed\n");
-    //         exit_code = 1;
-    //         goto cleanup;
-    //     }
+        /* Call and receive response */
+        rpc_data *response_data = rpc_call(state, handle_add2, &request_data);
+        if (response_data == NULL) {
+            fprintf(stderr, "Function call of add2 failed\n");
+            exit_code = 1;
+            goto cleanup;
+        }
 
-    //     /* Interpret response */
-    //     assert(response_data->data2_len == 0);
-    //     assert(response_data->data2 == NULL);
-    //     printf("Result of adding %d and %d: %d\n", left_operand, right_operand,
-    //            response_data->data1);
-    //     rpc_data_free(response_data);
-    // }
+        /* Interpret response */
+        assert(response_data->data2_len == 0);
+        assert(response_data->data2 == NULL);
+        printf("Result of adding %d and %d: %d\n", left_operand, right_operand,
+               response_data->data1);
+        rpc_data_free(response_data);
+    }
 
 cleanup:
     if (handle_add2 != NULL) {
