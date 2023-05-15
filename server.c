@@ -1,5 +1,6 @@
 #include "rpc.h"
 #include <assert.h>
+#include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -9,7 +10,15 @@ int main(int argc, char *argv[]) {
 
     rpc_server *state;
 
-    state = rpc_init_server(3000);
+    int port;
+
+    for(int i = 1; i < argc; i++) {
+        if(!strcmp(argv[i], "-p")) {
+            port = atoi(argv[++i]);
+        } 
+    }
+
+    state = rpc_init_server(port);
     if (state == NULL) {
         fprintf(stderr, "Failed to init\n");
         exit(EXIT_FAILURE);
@@ -50,3 +59,5 @@ rpc_data *add2_i8(rpc_data *in) {
     out->data2 = NULL;
     return out;
 }
+
+

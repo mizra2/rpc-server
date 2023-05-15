@@ -1,12 +1,26 @@
 #include "rpc.h"
 #include <assert.h>
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 
 int main(int argc, char *argv[]) {
+
     int exit_code = 0;
 
-    rpc_client *state = rpc_init_client("::1", 3000);
+    char *ip;
+
+    int port;
+
+    for(int i = 1; i < argc; i++) {
+        if(!strcmp(argv[i], "-i")) {
+            ip = argv[i + 1];
+        } else if(!strcmp(argv[i], "-p")) {
+            port = atoi(argv[++i]);
+        } 
+    }
+
+    rpc_client *state = rpc_init_client(ip, port);
     if (state == NULL) {
         exit(EXIT_FAILURE);
     }
