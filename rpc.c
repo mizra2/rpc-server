@@ -425,6 +425,8 @@ rpc_handle *rpc_find(rpc_client *cl, char *name) {
         return NULL;
     }
 
+    printf("found?!?!!? test!\n");
+
     return handler;
 }
 
