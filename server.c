@@ -59,5 +59,3 @@ rpc_data *add2_i8(rpc_data *in) {
     out->data2 = NULL;
     return out;
 }
-
-

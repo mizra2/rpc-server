@@ -69,7 +69,6 @@ rpc_server *rpc_init_server(int port) {
         printf("Error getting address info\n");
         exit(EXIT_FAILURE);
     }
-
     newServer->sockfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
 
     if(newServer->sockfd < 0) {
@@ -296,9 +295,13 @@ void rpc_serve_all(rpc_server * srv) {
                     // End Reciving Data From Client
                     // ======================== // 
 
+                    printf("Data Before: data1: %d data2: %d\n", data -> data1, ((char *)data->data2)[0]);
+
                     // Function Call 
 
                     data = srv -> functions -> F[value] -> function_handler(data);
+
+                    printf("Data After: data1: %d\n", data -> data1);
 
                     if (!data) {
                         // SEND FAILED CALL SIGNAL 
@@ -434,6 +437,8 @@ rpc_data *rpc_call(rpc_client *cl, rpc_handle *h, rpc_data *payload) {
 
     rpc_data *newData = malloc(sizeof(*newData));
 
+    printf("%d %d\n", payload->data1, ((char *)payload->data2)[0]);
+
     n = write(cl->sockfd, "call", 5);
 
     if (n < 0) {
@@ -519,6 +524,8 @@ new_data_read:
         newData->data2 = NULL;
     }
 
+    printf("New Data %d\n", newData->data1);
+
     // End Of Receive Data Back From Server
 
     return newData;
@@ -538,7 +545,7 @@ void rpc_close_client(rpc_client *cl) {
         n = write(cl->sockfd, "close", 5);
 
         if (n < 0) {
-            
+
             perror("read");
             exit(EXIT_FAILURE);
         
@@ -583,11 +590,11 @@ void rpc_data_free(rpc_data *data) {
 //     input.data2_len = 1;   
 // }
 
-// void test_call_function(rpc_client *cl, rpc_handle *h) {
-//     int test = 10;
-//     rpc_data request_data = { .data1 = 2, .data2_len = 0, .data2 = NULL};
-//     rpc_call(cl, h, &request_data);  
-// }
+void test_call_function(rpc_client *cl, rpc_handle *h) {
+    int test = -127;
+    rpc_data request_data = { .data1 = -127, .data2_len = 1, .data2 = &test};
+    rpc_call(cl, h, &request_data);  
+}
 
 // void *test_multithreading(void * s) {
 
