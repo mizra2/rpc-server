@@ -163,14 +163,11 @@ void rpc_serve_all(rpc_server * srv) {
             continue;
         } else {
 
-            // pthread_t thread_id;
-            // if(pthread_create(&thread_id, NULL, test_multithreading, (void*) srv) != 0) {
-            //     printf("Failed to create thread!\n");
-            // }
-            // pthread_detach(thread_id);
-
-            test_multithreading((void*)srv);
-
+            pthread_t thread_id;
+            if(pthread_create(&thread_id, NULL, test_multithreading, (void*) srv) != 0) {
+                printf("Failed to create thread!\n");
+            }
+            pthread_detach(thread_id);
         }
 
     }
