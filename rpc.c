@@ -49,11 +49,7 @@ rpc_server *rpc_init_server(int port) {
     newServer->functions = createArray();
 
     struct addrinfo hints, *res;
-
-    struct sockaddr_in client_addr;
-
-    char ip[INET_ADDRSTRLEN];
-
+    
     char service[6];
 
     snprintf(service, 6, "%d", port);
@@ -137,7 +133,7 @@ int rpc_register(rpc_server *srv, char *name, rpc_handler handler) {
     appendArray(srv->functions, newFunction);
 
     // Print registered funciton to ensure that it is being added correctly (Testing)
-    // printf("%d: Registered Function: %s\n", srv->functions->n, name);
+    printf("%d: Registered Function: %s\n", srv->functions->n, name);
 
     // Success if return 1 (Per Spec Sheet)
     return 1;
