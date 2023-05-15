@@ -1,61 +1,77 @@
-==1127976== Memcheck, a memory error detector
-==1127976== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
-==1127976== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info
-==1127976== Command: ./rpc-server -p 8198
-==1127976== 
-==1127976== 
-==1127976== Process terminating with default action of signal 2 (SIGINT)
-==1127976==    at 0x49885D7: accept (accept.c:26)
-==1127976==    by 0x1099FA: rpc_serve_all (in /home/mizra/comp30023-2023-project-2/rpc-server)
-==1127976==    by 0x1095C0: main (in /home/mizra/comp30023-2023-project-2/rpc-server)
-==1127976== 
-==1127976== HEAP SUMMARY:
-==1127976==     in use at exit: 1,088 bytes in 5 blocks
-==1127976==   total heap usage: 12 allocs, 7 frees, 1,262 bytes allocated
-==1127976== 
-==1127976== 16 bytes in 1 blocks are still reachable in loss record 1 of 5
-==1127976==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
-==1127976==    by 0x1096E1: rpc_init_server (in /home/mizra/comp30023-2023-project-2/rpc-server)
-==1127976==    by 0x10952D: main (in /home/mizra/comp30023-2023-project-2/rpc-server)
-==1127976== 
-==1127976== 16 bytes in 1 blocks are still reachable in loss record 2 of 5
-==1127976==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
-==1127976==    by 0x10A767: createArray (in /home/mizra/comp30023-2023-project-2/rpc-server)
-==1127976==    by 0x1096EF: rpc_init_server (in /home/mizra/comp30023-2023-project-2/rpc-server)
-==1127976==    by 0x10952D: main (in /home/mizra/comp30023-2023-project-2/rpc-server)
-==1127976== 
-==1127976== 16 bytes in 1 blocks are still reachable in loss record 3 of 5
-==1127976==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
-==1127976==    by 0x10A7BC: createArray (in /home/mizra/comp30023-2023-project-2/rpc-server)
-==1127976==    by 0x1096EF: rpc_init_server (in /home/mizra/comp30023-2023-project-2/rpc-server)
-==1127976==    by 0x10952D: main (in /home/mizra/comp30023-2023-project-2/rpc-server)
-==1127976== 
-==1127976== 16 bytes in 1 blocks are still reachable in loss record 4 of 5
-==1127976==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
-==1127976==    by 0x1098DD: rpc_register (in /home/mizra/comp30023-2023-project-2/rpc-server)
-==1127976==    by 0x109582: main (in /home/mizra/comp30023-2023-project-2/rpc-server)
-==1127976== 
-==1127976== 1,024 bytes in 1 blocks are still reachable in loss record 5 of 5
-==1127976==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
-==1127976==    by 0x48DFC23: _IO_file_doallocate (filedoalloc.c:101)
-==1127976==    by 0x48EED5F: _IO_doallocbuf (genops.c:347)
-==1127976==    by 0x48EDFDF: _IO_file_overflow@@GLIBC_2.2.5 (fileops.c:744)
-==1127976==    by 0x48EC754: _IO_new_file_xsputn (fileops.c:1243)
-==1127976==    by 0x48EC754: _IO_file_xsputn@@GLIBC_2.2.5 (fileops.c:1196)
-==1127976==    by 0x48D61CC: outstring_func (vfprintf-internal.c:239)
-==1127976==    by 0x48D61CC: __vfprintf_internal (vfprintf-internal.c:1263)
-==1127976==    by 0x48C181E: printf (printf.c:33)
-==1127976==    by 0x109631: add2_i8 (in /home/mizra/comp30023-2023-project-2/rpc-server)
-==1127976==    by 0x10A5B3: test_multithreading (in /home/mizra/comp30023-2023-project-2/rpc-server)
-==1127976==    by 0x109A18: rpc_serve_all (in /home/mizra/comp30023-2023-project-2/rpc-server)
-==1127976==    by 0x1095C0: main (in /home/mizra/comp30023-2023-project-2/rpc-server)
-==1127976== 
-==1127976== LEAK SUMMARY:
-==1127976==    definitely lost: 0 bytes in 0 blocks
-==1127976==    indirectly lost: 0 bytes in 0 blocks
-==1127976==      possibly lost: 0 bytes in 0 blocks
-==1127976==    still reachable: 1,088 bytes in 5 blocks
-==1127976==         suppressed: 0 bytes in 0 blocks
-==1127976== 
-==1127976== For lists of detected and suppressed errors, rerun with: -s
-==1127976== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==1135243== Memcheck, a memory error detector
+==1135243== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==1135243== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info
+==1135243== Command: ./rpc-server -p 8198
+==1135243== 
+==1135243== 
+==1135243== Process terminating with default action of signal 2 (SIGINT)
+==1135243==    at 0x498860F: accept (accept.c:26)
+==1135243==    by 0x109A3C: rpc_serve_all (in /home/mizra/comp30023-2023-project-2/rpc-server)
+==1135243==    by 0x109600: main (in /home/mizra/comp30023-2023-project-2/rpc-server)
+==1135243== 
+==1135243== HEAP SUMMARY:
+==1135243==     in use at exit: 2,656 bytes in 8 blocks
+==1135243==   total heap usage: 123 allocs, 115 frees, 4,594 bytes allocated
+==1135243== 
+==1135243== 16 bytes in 1 blocks are still reachable in loss record 1 of 7
+==1135243==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==1135243==    by 0x10971B: rpc_init_server (in /home/mizra/comp30023-2023-project-2/rpc-server)
+==1135243==    by 0x10956D: main (in /home/mizra/comp30023-2023-project-2/rpc-server)
+==1135243== 
+==1135243== 16 bytes in 1 blocks are still reachable in loss record 2 of 7
+==1135243==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==1135243==    by 0x10A75E: createArray (in /home/mizra/comp30023-2023-project-2/rpc-server)
+==1135243==    by 0x109729: rpc_init_server (in /home/mizra/comp30023-2023-project-2/rpc-server)
+==1135243==    by 0x10956D: main (in /home/mizra/comp30023-2023-project-2/rpc-server)
+==1135243== 
+==1135243== 16 bytes in 1 blocks are still reachable in loss record 3 of 7
+==1135243==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==1135243==    by 0x10A7B3: createArray (in /home/mizra/comp30023-2023-project-2/rpc-server)
+==1135243==    by 0x109729: rpc_init_server (in /home/mizra/comp30023-2023-project-2/rpc-server)
+==1135243==    by 0x10956D: main (in /home/mizra/comp30023-2023-project-2/rpc-server)
+==1135243== 
+==1135243== 24 bytes in 1 blocks are still reachable in loss record 4 of 7
+==1135243==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==1135243==    by 0x10A40F: test_multithreading (in /home/mizra/comp30023-2023-project-2/rpc-server)
+==1135243==    by 0x48F5B42: start_thread (pthread_create.c:442)
+==1135243==    by 0x4986BB3: clone (clone.S:100)
+==1135243== 
+==1135243== 544 bytes in 2 blocks are possibly lost in loss record 5 of 7
+==1135243==    at 0x484DA83: calloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==1135243==    by 0x40147D9: calloc (rtld-malloc.h:44)
+==1135243==    by 0x40147D9: allocate_dtv (dl-tls.c:375)
+==1135243==    by 0x40147D9: _dl_allocate_tls (dl-tls.c:634)
+==1135243==    by 0x48F6834: allocate_stack (allocatestack.c:430)
+==1135243==    by 0x48F6834: pthread_create@@GLIBC_2.34 (pthread_create.c:647)
+==1135243==    by 0x109A6D: rpc_serve_all (in /home/mizra/comp30023-2023-project-2/rpc-server)
+==1135243==    by 0x109600: main (in /home/mizra/comp30023-2023-project-2/rpc-server)
+==1135243== 
+==1135243== 1,016 bytes in 1 blocks are still reachable in loss record 6 of 7
+==1135243==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==1135243==    by 0x109914: rpc_register (in /home/mizra/comp30023-2023-project-2/rpc-server)
+==1135243==    by 0x1095C2: main (in /home/mizra/comp30023-2023-project-2/rpc-server)
+==1135243== 
+==1135243== 1,024 bytes in 1 blocks are still reachable in loss record 7 of 7
+==1135243==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==1135243==    by 0x48DFC23: _IO_file_doallocate (filedoalloc.c:101)
+==1135243==    by 0x48EED5F: _IO_doallocbuf (genops.c:347)
+==1135243==    by 0x48EDFDF: _IO_file_overflow@@GLIBC_2.2.5 (fileops.c:744)
+==1135243==    by 0x48EC754: _IO_new_file_xsputn (fileops.c:1243)
+==1135243==    by 0x48EC754: _IO_file_xsputn@@GLIBC_2.2.5 (fileops.c:1196)
+==1135243==    by 0x48D61CC: outstring_func (vfprintf-internal.c:239)
+==1135243==    by 0x48D61CC: __vfprintf_internal (vfprintf-internal.c:1263)
+==1135243==    by 0x48C181E: printf (printf.c:33)
+==1135243==    by 0x109671: add2_i8 (in /home/mizra/comp30023-2023-project-2/rpc-server)
+==1135243==    by 0x10A5AA: test_multithreading (in /home/mizra/comp30023-2023-project-2/rpc-server)
+==1135243==    by 0x48F5B42: start_thread (pthread_create.c:442)
+==1135243==    by 0x4986BB3: clone (clone.S:100)
+==1135243== 
+==1135243== LEAK SUMMARY:
+==1135243==    definitely lost: 0 bytes in 0 blocks
+==1135243==    indirectly lost: 0 bytes in 0 blocks
+==1135243==      possibly lost: 544 bytes in 2 blocks
+==1135243==    still reachable: 2,112 bytes in 6 blocks
+==1135243==         suppressed: 0 bytes in 0 blocks
+==1135243== 
+==1135243== For lists of detected and suppressed errors, rerun with: -s
+==1135243== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)

@@ -167,7 +167,6 @@ void rpc_serve_all(rpc_server * srv) {
             if(pthread_create(&thread_id, NULL, test_multithreading, (void*) srv) != 0) {
                 printf("Failed to create thread!\n");
             }
-            continue;
         }
 
     }
@@ -435,6 +434,8 @@ void *test_multithreading(void * s) {
 
     rpc_server *srv = (rpc_server*)s;
 
+    int a_sockfd = srv->a_sockfd;
+
     char buffer[256];
 
     int n;
@@ -442,9 +443,9 @@ void *test_multithreading(void * s) {
     while (CONNECTION_ESTABLISHED) {
 
         // leave space for null term
-        n = read(srv->a_sockfd, buffer, 5);
+        n = read(a_sockfd, buffer, 5);
         if (n < 0) {
-            printf("Error reading");
+            printf("Error reading\n");
             exit(EXIT_FAILURE);
         }
 
@@ -457,15 +458,15 @@ void *test_multithreading(void * s) {
 
             close_signal = ntohl(close_signal);
 
-            n = write(srv->a_sockfd, & close_signal, sizeof(uint32_t));
+            n = write(a_sockfd, & close_signal, sizeof(uint32_t));
 
-            close(srv->a_sockfd);
+            close(a_sockfd);
             break;
         }
 
         if (!strcmp(buffer, "find")) {
 
-            n = read(srv->a_sockfd, buffer, 255);
+            n = read(a_sockfd, buffer, 255);
 
             if (n < 0) {
                 printf("Error reading");
@@ -483,7 +484,7 @@ void *test_multithreading(void * s) {
 
                     uint32_t value = htonl(i);
 
-                    n = write(srv->a_sockfd, & value, sizeof(uint32_t));
+                    n = write(a_sockfd, & value, sizeof(uint32_t));
 
                     found = 1;
                     break;
@@ -494,7 +495,7 @@ void *test_multithreading(void * s) {
             if (found == -1) {
                 uint32_t value = htonl(-1);
 
-                n = write(srv->a_sockfd, & value, sizeof(uint32_t));
+                n = write(a_sockfd, & value, sizeof(uint32_t));
             }
         }
 
@@ -503,7 +504,7 @@ void *test_multithreading(void * s) {
             // Accept Data Regarding Index of Function
             uint32_t value;
 
-            n = read(srv->a_sockfd, & value, sizeof(uint32_t));
+            n = read(a_sockfd, & value, sizeof(uint32_t));
 
             value = ntohl(value);
 
@@ -514,14 +515,14 @@ void *test_multithreading(void * s) {
             assert(data);
             // Data 1 (Client -> Server)
             int64_t test;
-            n = read(srv->a_sockfd, & test, sizeof(int64_t));
+            n = read(a_sockfd, & test, sizeof(int64_t));
             data -> data1 = (int) be64toh(test);
 
             // Data 2 Len (Client -> Server)
 
             uint32_t data2_len;
 
-            n = read(srv->a_sockfd, & data2_len, sizeof(uint32_t));
+            n = read(a_sockfd, & data2_len, sizeof(uint32_t));
 
             data -> data2_len = (size_t) ntohl(data2_len);
 
@@ -531,7 +532,7 @@ void *test_multithreading(void * s) {
                 void * data2 = malloc(data -> data2_len);
                 assert(data2);
 
-                n = read(srv->a_sockfd, data2, data -> data2_len);
+                n = read(a_sockfd, data2, data -> data2_len);
                 data -> data2 = data2;
             } else {
                 data -> data2 = NULL;
@@ -548,18 +549,18 @@ void *test_multithreading(void * s) {
                 // SEND FAILED CALL SIGNAL 
                 uint32_t status = 0;
                 status = htonl(status);
-                n = write(srv->a_sockfd, & status, sizeof(uint32_t));
+                n = write(a_sockfd, & status, sizeof(uint32_t));
             } else {
                 uint32_t status = 1;
                 status = htonl(status);
-                n = write(srv->a_sockfd, & status, sizeof(uint32_t));
+                n = write(a_sockfd, & status, sizeof(uint32_t));
                 // Send New Data Back To Client If Successful
                 // ======================== // 
 
                 // Data 1 (Server -> Client)
 
                 int64_t value_d = htobe64((int64_t) newData -> data1);
-                n = write(srv->a_sockfd, & value_d, sizeof(int64_t));
+                n = write(a_sockfd, & value_d, sizeof(int64_t));
 
                 // Data 2 Len (Server -> Client)
 
@@ -567,13 +568,13 @@ void *test_multithreading(void * s) {
 
                 convertedValue = htonl(convertedValue);
 
-                n = write(srv->a_sockfd, & convertedValue, sizeof(uint32_t));
+                n = write(a_sockfd, & convertedValue, sizeof(uint32_t));
 
                 // Data 2 Field (Server -> Client)
                 if (newData -> data2_len != 0) {
                     void * data2 = newData -> data2;
 
-                    n = write(srv->a_sockfd, data2, newData -> data2_len);
+                    n = write(a_sockfd, data2, newData -> data2_len);
                 }
             }
             rpc_data_free(data);
