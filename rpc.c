@@ -441,13 +441,9 @@ void *test_multithreading(void * s) {
 
     // Lock
 
-    pthread_mutex_lock(&srv->socket_mutex);
-
     int a_sockfd = srv->a_sockfd;
 
     // Unlock
-
-    pthread_mutex_unlock(&srv->socket_mutex);
 
 
 
