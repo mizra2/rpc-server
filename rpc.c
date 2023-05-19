@@ -632,7 +632,6 @@ void *test_multithreading(void * s) {
 
                 }
 
-                printf("test14!\n");
             }
             rpc_data_free(data);
             rpc_data_free(newData);
