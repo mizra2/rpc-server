@@ -6,8 +6,7 @@ CLIENT=rpc-client
 
 .PHONY: format all
 
-all: $(LIBRARY) $(SERVER) $(CLIENT) test_client test_server
-
+all: $(LIBRARY) $(SERVER) $(CLIENT)
 $(RPC_SYSTEM): rpc.c rpc.h
 	$(CC) -Wall -pthread -c -o $@ $<
 
@@ -19,12 +18,6 @@ $(SERVER): server.c $(LIBRARY)
 
 $(CLIENT): client.c $(LIBRARY)
 	$(CC) -Wall -pthread -o $@ $^
-
-test_client: rpc.c rpc.h
-	$(CC) -o test_client client.a $(RPC_SYSTEM)
-
-test_server:
-	$(CC) -o test_server server.a $(RPC_SYSTEM)
 
 format:
 	clang-format -style=file -i *.c *.h
