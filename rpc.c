@@ -273,6 +273,10 @@ rpc_handle *rpc_find(rpc_client *cl, char *name) {
 
 rpc_data *rpc_call(rpc_client *cl, rpc_handle *h, rpc_data *payload) {
 
+    if(cl == NULL || h == NULL || payload == NULL) {
+        return NULL;
+    }
+
     if(payload->data2_len == 0 && payload->data2 != NULL) {
         perror("Bad data");
         return NULL;
