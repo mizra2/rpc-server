@@ -9,3 +9,5 @@ valgrind_server_out.txt
 test_server.c
 test_client.c
 cases
+client.a
+server.a
