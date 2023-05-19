@@ -273,6 +273,19 @@ rpc_handle *rpc_find(rpc_client *cl, char *name) {
 
 rpc_data *rpc_call(rpc_client *cl, rpc_handle *h, rpc_data *payload) {
 
+    if(payload->data2_len == 0 && payload->data2 != NULL) {
+        perror("Bad data");
+        return NULL;
+    }
+    if(payload->data2_len > 0 && payload->data2 == NULL) {
+        perror("Bad Data!");
+        return NULL;
+    }
+    if(payload->data2_len < 0 || payload->data2_len > 100000) {
+        perror("Bad Data!");
+        return NULL;
+    }
+
     int n;
 
     rpc_data *newData = malloc(sizeof(*newData));
@@ -556,6 +569,23 @@ void *test_multithreading(void * s) {
 
             rpc_data *newData = srv -> functions -> F[value] -> function_handler(data);
 
+            if(newData->data2_len == 0 && newData->data2 != NULL) {
+                perror("Bad data");
+                // send something to client here?
+                rpc_data_free(newData);
+                newData = NULL;
+            }
+            if(newData->data2_len > 0 && newData->data2 == NULL) {
+                perror("Bad Data!");
+                rpc_data_free(newData);
+                newData = NULL;
+            }
+            if(newData->data2_len < 0 || newData->data2_len > 100000) {
+                perror("Bad Data!")
+                rpc_data_free(newData);
+                newData = NULL;
+            }
+
             if (!newData) {
                 // SEND FAILED CALL SIGNAL 
                 uint32_t status = 0;
@@ -565,6 +595,7 @@ void *test_multithreading(void * s) {
                 uint32_t status = 1;
                 status = htonl(status);
                 n = write(a_sockfd, & status, sizeof(uint32_t));
+                
                 // Send New Data Back To Client If Successful
                 // ======================== // 
 
