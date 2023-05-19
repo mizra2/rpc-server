@@ -581,7 +581,7 @@ void *test_multithreading(void * s) {
                 newData = NULL;
             }
             if(newData->data2_len < 0 || newData->data2_len > 100000) {
-                perror("Bad Data!")
+                perror("Bad Data!");
                 rpc_data_free(newData);
                 newData = NULL;
             }
@@ -595,7 +595,7 @@ void *test_multithreading(void * s) {
                 uint32_t status = 1;
                 status = htonl(status);
                 n = write(a_sockfd, & status, sizeof(uint32_t));
-                
+
                 // Send New Data Back To Client If Successful
                 // ======================== // 
 
