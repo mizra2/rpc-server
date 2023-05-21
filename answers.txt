@@ -1,1 +1,55 @@
-TODO //
+Planning Task:
+1. Should the server accept calls from everyone, or just a subset of users?
+
+This will depened on the functionality and intented use of the server and the requirements
+of the system that is required. For instance, sensitive information that should not be 
+accessible to the public should be restricted to a subset of users.
+
+2. Should authentication etc. be provided by the RPC framework, or by the functions that use the RPC framework?
+
+This will also depend if you want certain functions to be accessible to certain people
+or want. For example, a subset of users such as admins might want to give access to specific
+people but not others but still want the other users to have some functionality. However, this
+could lead to inconsistent or insecure implementatinos of security. If we authetnetic through the
+rpc framework, we can ensure that security is consistent across the server / services it provides
+
+
+3. What transport layer protocol should be used? What are the trade-offs?
+
+TCP will be used for this implementation. This is due to the fact that TCP ensures all data sent 
+is being sent and recieved correctly as it resends adata if packets get lost during transmission.
+As we are working with data transmission and the execution of functions that may use sensitive data, 
+This ensures that any sensitive data thats sent is not lost. However, TCP is slow due to this, 
+and if we want to use applications that are time senistive, this may be an issue.
+
+4. In which function(s) should the socket(s) be created?
+
+In the rpc_init_client and rpc_init_server
+
+
+5. Should rpc_client and rpc_server be allocated dynamically or statically? What are the implications
+for the client and server code?
+
+Since we wish for this RPC System to support multiple architecture, we will be allocating them dynamically.
+This allows us to have more flexiblity and request the exact memory we require. This helps on machines that have
+restricted access to memory. This implies that we must free assoicated memory in the client after a request is made
+however we will be unable to free any memory that was allocated for the server as the server must be able to be 
+continously running. 
+
+6. What happens if one host uses big-endian byte order and the other uses little-endian? How does that relate
+to “network byte order”?
+If one host uses big-edian byte order and other uses little endian, then the data that gets transmitted may get corrupted 
+or not working at at all. This can be fixed by first converted the bytes to network bytes before sending the data. Once
+a host has received the bytes, they can convert the network byte back to their byte order. 
+
+Protocol Design
+Since we are using a 0 based index to access functions, the protocal will use a uint32_t to send and recieve
+infomation about the index of the function for the server to execute. This is because uint32_t represents unsigned integers
+ranging from 0 to 4,294,967,295. Since the spec sheet says we can limit data1 to no more than 64 bit, we will use cast data1 to a int64_t
+to account for architectures before we send and recieve it. 
+
+Furthermore, since size_t is system depenedent, but is of a type of unsigned integer, we can type-cast it to a type of unsigned 
+integer of length < 100 000 (per spec sheet). I have used uint32_t as it fits in the range we are seeking, which typecasts the 
+size_t data field, and send it to account for various architectures. 
+
+We can send and recieve the void * data within rpc_data as needed. 

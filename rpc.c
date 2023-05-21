@@ -1,3 +1,7 @@
+//  /\_/\  
+// ( o.o )  ♥ ~ < Milad Izra Project 2 Computer Systems 1263635 >
+//  > ^ <
+
 #include <stdlib.h>
 #include "rpc.h"
 #include <arpa/inet.h>
@@ -16,6 +20,14 @@
 
 #define MAX_NAME_LENGTH 1000
 
+#define FIND "find"
+
+#define CALL "call"
+
+#define END "end!"
+
+
+
 
 //     ╱|、
 //   (˚ˎ 。7  
@@ -29,7 +41,9 @@ struct rpc_function {
 
 struct rpc_server {
     int sockfd;
+    // Accepting Socket
     int a_sockfd;
+    // Array List Of Functions
     array_t *functions;
     pthread_mutex_t socket_mutex;
 };
@@ -40,19 +54,16 @@ struct rpc_handle {
     
 };
 
-struct thread_content {
-    rpc_server *srv;
-    int a_sockfd;
-};
-
-
 // Based on Workshop 9 // 
 rpc_server *rpc_init_server(int port) {
     
+    // Allocate Memory 
     rpc_server *newServer = malloc(sizeof(*newServer));
     newServer->functions = createArray();
 
     struct addrinfo hints, *res;
+
+    // Convert To String
 
     char service[6];
 
@@ -60,6 +71,7 @@ rpc_server *rpc_init_server(int port) {
 
     memset(&hints, 0, sizeof hints);
 
+    // IPV6
     hints.ai_family = AF_INET6;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_flags = AI_PASSIVE;
@@ -71,6 +83,10 @@ rpc_server *rpc_init_server(int port) {
         exit(EXIT_FAILURE);
     }
     struct addrinfo *p;
+
+    // From Lecture Slides 
+    
+    // Since we are using IPV6 have to go through possible socket
 
     for(p = res; p != NULL; p = p -> ai_next) {
         if(p->ai_family == AF_INET6 && (newServer->sockfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol)) < 0) {
@@ -93,15 +109,6 @@ rpc_server *rpc_init_server(int port) {
     }
     
     freeaddrinfo(res);
-
-    // newServer->a_sockfd = accept(newServer->sockfd, (struct sockaddr*)&client_addr, &client_addr_size);
-
-    // Need sockfd, clientaddr, client_addr_size
-
-    // inet_ntop(client_addr.sin_family, &client_addr.sin_addr, ip,
-	// 		  INET_ADDRSTRLEN);
-
-    // port = ntohs(client_addr.sin_port);
 
 
     return newServer;
@@ -156,7 +163,7 @@ void rpc_serve_all(rpc_server * srv) {
     }
 
     while (RUNNING) {
-
+        // Accept a new connection
         srv->a_sockfd = accept(srv -> sockfd, (struct sockaddr * ) & client_addr, & client_addr_size);
 
 
@@ -164,9 +171,9 @@ void rpc_serve_all(rpc_server * srv) {
             // No Connection Found, Keep Listening For Incoming Requests
             continue;
         } else {
-
+            // If a connection is found, handle it's requests by creating a new thread
             pthread_t thread_id;
-            if(pthread_create(&thread_id, NULL, test_multithreading, (void*) srv) != 0) {
+            if(pthread_create(&thread_id, NULL, client_handler, (void*) srv) != 0) {
                 printf("Failed to create thread!\n");
             }
         }
@@ -195,6 +202,8 @@ rpc_client *rpc_init_client(char *addr, int port) {
     snprintf(service, 6, "%d", port);
 
     memset(&hints, 0, sizeof hints);
+
+    // IPv6
 
     hints.ai_family = AF_INET6;
     hints.ai_socktype = SOCK_STREAM;
@@ -229,6 +238,8 @@ rpc_client *rpc_init_client(char *addr, int port) {
     return newClient;
 }
 
+
+// Returns a structure that contains a int32 that represents an index for the array contained on the server
 rpc_handle *rpc_find(rpc_client *cl, char *name) {
 
     int n;
@@ -239,6 +250,8 @@ rpc_handle *rpc_find(rpc_client *cl, char *name) {
 
     handler->n = -1;
     
+    // Send a "find" request to the server
+
     n = write(cl->sockfd, "find", 5);
 
     if (n < 0) {
@@ -248,12 +261,16 @@ rpc_handle *rpc_find(rpc_client *cl, char *name) {
 
 	}
 
+    // Write function name to server
+
     n = write(cl->sockfd, name, strlen(name));
 
     if(n < 0) {
         perror("write");
 		exit(EXIT_FAILURE);
     }
+
+    // Get back the index of the function on server
 
     n = read(cl->sockfd, &handler->n, sizeof(uint32_t));
 
@@ -268,10 +285,14 @@ rpc_handle *rpc_find(rpc_client *cl, char *name) {
         return NULL;
     }
 
+
     return handler;
 }
 
+// Calls a function on the server
 rpc_data *rpc_call(rpc_client *cl, rpc_handle *h, rpc_data *payload) {
+
+    // Handle bad data
 
     if(cl == NULL || h == NULL || payload == NULL) {
         return NULL;
@@ -294,6 +315,8 @@ rpc_data *rpc_call(rpc_client *cl, rpc_handle *h, rpc_data *payload) {
 
     rpc_data *newData = malloc(sizeof(*newData));
 
+    // Write to server we are calling a function
+
     n = write(cl->sockfd, "call", 5);
 
     if (n < 0) {
@@ -302,6 +325,8 @@ rpc_data *rpc_call(rpc_client *cl, rpc_handle *h, rpc_data *payload) {
 		exit(EXIT_FAILURE);
         
 	}
+
+    // Convert to network byte
 
     h->n = htonl(h->n);
 
@@ -312,12 +337,16 @@ rpc_data *rpc_call(rpc_client *cl, rpc_handle *h, rpc_data *payload) {
     // ======================== // 
     // Data 1 
 
+    // Send payload data 1 & convert it to a networtk byte 
+
     int64_t value = htobe64((int64_t)payload->data1);
 
     n = write(cl->sockfd, &value, sizeof(int64_t));
 
 
     // Data 2 Len (Client -> Server)
+
+    // Convert size_t of type uint32_t so we can convert it to a network byte and send it over
 
     uint32_t convertedValue = (uint32_t)payload->data2_len;
 
@@ -326,6 +355,8 @@ rpc_data *rpc_call(rpc_client *cl, rpc_handle *h, rpc_data *payload) {
     n = write(cl->sockfd, &convertedValue, sizeof(uint32_t));
 
     // Data 2 Field (Client -> Server)
+
+    // Send data 2 field
 
     if(payload->data2_len != 0) {
         void *data2 = payload->data2;
@@ -352,6 +383,8 @@ new_data_read:
 
     // Receive Data Back From Server (Server -> Client)
     // ======================== // 
+    
+    // Same thing but in reverse
 
     // Data 1 (Server -> Client)
     int64_t value_d;
@@ -387,7 +420,6 @@ new_data_read:
 
 void rpc_close_client(rpc_client *cl) {
 
-    // TODO
     int n;
 
     if (!cl) return;
@@ -437,32 +469,11 @@ void rpc_data_free(rpc_data *data) {
 //       ( . .) ♥ ~< Testing Functions  For "add2" & Mutlithreading =) >
 //       c(")(")
 
-
-// void test_function_execution(rpc_server *test) {
-//     rpc_data input;
-//     input.data1 = 2;
-//     int data2_val = 5;
-//     input.data2 = &data2_val;
-//     input.data2_len = 1;   
-// }
-// void test_call_function(rpc_client *cl, rpc_handle *h) {
-//     int test = -127;
-//     rpc_data request_data = { .data1 = -127, .data2_len = 1, .data2 = &test};
-//     rpc_call(cl, h, &request_data);  
-// }
-
-void *test_multithreading(void * s) {
-
+void *client_handler(void * s) {
 
     rpc_server *srv = (rpc_server*)s;
 
-    // Lock
-
     int a_sockfd = srv->a_sockfd;
-
-    // Unlock
-
-
 
     char buffer[256];
 
@@ -479,6 +490,8 @@ void *test_multithreading(void * s) {
 
         buffer[n] = '\0';
 
+        // Handle Close Client Request
+
         if (!strcmp(buffer, "end!")) {
 
             uint32_t close_signal = 1;
@@ -491,6 +504,8 @@ void *test_multithreading(void * s) {
             break;
         }
 
+        // Handle Find Call Request
+
         if (!strcmp(buffer, "find")) {
 
             n = read(a_sockfd, buffer, 255);
@@ -500,8 +515,10 @@ void *test_multithreading(void * s) {
                 exit(EXIT_FAILURE);
             }
             buffer[n] = '\0';
+
             // printf("%s\n", buffer);
             // printf("%s\n", functionName);
+            // Loop thru possible functions
             int found = -1;
             for (int i = 0; i < srv -> functions -> n; i++) {
 
@@ -519,12 +536,16 @@ void *test_multithreading(void * s) {
                 }
             }
 
+            // Handle failed find by sending -1
+
             if (found == -1) {
                 uint32_t value = htonl(-1);
 
                 n = write(a_sockfd, & value, sizeof(uint32_t));
             }
         }
+
+        // Handle a function call request by a client
 
         if (!strcmp(buffer, "call")) {
 
@@ -535,11 +556,14 @@ void *test_multithreading(void * s) {
 
             value = ntohl(value);
 
+            // Per Protocal 
             // Receive Data From Client (Client -> Server)
             // ======================== // 
 
+
             rpc_data * data = malloc(sizeof( * data));
             assert(data);
+
             // Data 1 (Client -> Server)
             int64_t test;
             n = read(a_sockfd, & test, sizeof(int64_t));
@@ -637,14 +661,18 @@ void *test_multithreading(void * s) {
                 }
 
             }
+
+            // Free data
             rpc_data_free(data);
             rpc_data_free(newData);
-
         }
     }
     return NULL;
 }
 
+
+// Array Util Functions From Project 1 
+// Create an empty array
 array_t *createArray() {
     array_t *arr = malloc(sizeof(*arr));
     assert(arr);
@@ -656,7 +684,7 @@ array_t *createArray() {
     return arr;
 }
 
-
+// Ensure an array has enough room
 void ensureArraySize(array_t *arr) {
     if(arr->n == arr->size) {
         arr->size *= 2;
@@ -665,13 +693,14 @@ void ensureArraySize(array_t *arr) {
     }
 }
 
-
+// Add function to an array
 void appendArray(array_t *arr, rpc_function *n) {
     ensureArraySize(arr);
     arr->F[arr->n] = n;
     (arr->n)++;
 }
 
+// Free the array
 void arrayFree(array_t *arr) {
 	for (int i = 0; i < arr->n; i++) {
 		free(arr->F[i]);
