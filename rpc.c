@@ -252,7 +252,7 @@ rpc_handle *rpc_find(rpc_client *cl, char *name) {
     
     // Send a "find" request to the server
 
-    n = write(cl->sockfd, "find", 5);
+    n = write(cl->sockfd, FIND, 5);
 
     if (n < 0) {
 
@@ -317,7 +317,7 @@ rpc_data *rpc_call(rpc_client *cl, rpc_handle *h, rpc_data *payload) {
 
     // Write to server we are calling a function
 
-    n = write(cl->sockfd, "call", 5);
+    n = write(cl->sockfd, CALL, 5);
 
     if (n < 0) {
 
@@ -428,7 +428,7 @@ void rpc_close_client(rpc_client *cl) {
         // Connection is still open 
         // Send a request to close connection;
 
-        n = write(cl->sockfd, "end!", 5);
+        n = write(cl->sockfd, END, 5);
 
         if (n < 0) {
 
@@ -506,7 +506,7 @@ void *client_handler(void * s) {
 
         // Handle Find Call Request
 
-        if (!strcmp(buffer, "find")) {
+        if (!strcmp(buffer, FIND)) {
 
             n = read(a_sockfd, buffer, 255);
 
@@ -547,7 +547,7 @@ void *client_handler(void * s) {
 
         // Handle a function call request by a client
 
-        if (!strcmp(buffer, "call")) {
+        if (!strcmp(buffer, CALL)) {
 
             // Accept Data Regarding Index of Function
             uint32_t value;
