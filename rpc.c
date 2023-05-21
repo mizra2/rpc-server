@@ -1,6 +1,6 @@
-//  /\_/\  
-// ( o.o )  ♥ ~ < Milad Izra Project 2 Computer Systems 1263635 >
-//  > ^ <
+/*   /\_/\  
+    ( o.o )  ♥ ~ < Milad Izra Project 2 Computer Systems 1263635 >
+     > ^ <   */ 
 
 #include <stdlib.h>
 #include "rpc.h"
