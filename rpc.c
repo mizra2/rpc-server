@@ -40,8 +40,9 @@ struct rpc_function {
 };
 
 struct rpc_server {
+    // Server Socket ID
     int sockfd;
-    // Accepting Socket
+    // Accepting Socket ID 
     int a_sockfd;
     // Array List Of Functions
     array_t *functions;
